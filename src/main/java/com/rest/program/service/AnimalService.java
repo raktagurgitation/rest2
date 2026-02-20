@@ -2,6 +2,7 @@ package com.rest.program.service;
 
 import com.rest.program.dto.AnimalDTO;
 import com.rest.program.dto.CatFactDTO;
+import com.rest.program.dto.RandomNameDTO;
 import com.rest.program.entity.Animal;
 import com.rest.program.repository.AnimalRepository;
 import jakarta.transaction.Transactional;
@@ -13,6 +14,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.node.ObjectNode;
 
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 @Slf4j
@@ -25,6 +27,7 @@ public class AnimalService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final String catsFactURL = "https://catfact.ninja/fact?max_length=100";
+    private final String randomNameURL = "https://api.randomdatatools.ru/?count=1&params=FirstName";
 
     private Animal convertToAnimal(AnimalDTO animalDTO) {
         return Animal.builder()
@@ -51,6 +54,16 @@ public class AnimalService {
     }
 
     public ObjectNode save(AnimalDTO animalDTO) {
+        animalRepository.save(convertToAnimal(animalDTO));
+        return getAnimalResponse(animalDTO);
+    }
+
+    public ObjectNode generateAnimal() {
+        int age = ThreadLocalRandom.current().nextInt(1, 20);
+        String nameHTML = restTemplate.getForObject(randomNameURL, String.class);
+        RandomNameDTO randomNameDTO = objectMapper.readValue(nameHTML, RandomNameDTO.class);
+        AnimalDTO animalDTO = new AnimalDTO("cat",randomNameDTO.getFirstName(), age);
+        log.info("Take random name from {}", randomNameURL);
         animalRepository.save(convertToAnimal(animalDTO));
         return getAnimalResponse(animalDTO);
     }

@@ -26,6 +26,11 @@ public class RController {
         return animalService.findAll();
     }
 
+    @GetMapping("/api/animal/generate")
+    public ObjectNode generateAnimal(){
+        return animalService.generateAnimal();
+    }
+
     @GetMapping("/api/animal")
     public ObjectNode getBaseById(@RequestParam("id") int id){
         return animalService.findById(id);
