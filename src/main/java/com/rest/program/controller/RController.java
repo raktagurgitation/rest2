@@ -5,6 +5,7 @@ import com.rest.program.service.AnimalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class RController {
     private final AnimalService animalService;
 
     @PostMapping("/api/animal")
-    public AnimalDTO sayHello(@RequestBody AnimalDTO animalDTO) {
+    public ObjectNode sayHello(@RequestBody AnimalDTO animalDTO) {
         return animalService.save(animalDTO);
     }
 
@@ -26,12 +27,12 @@ public class RController {
     }
 
     @GetMapping("/api/animal")
-    public AnimalDTO getBaseById(@RequestParam("id") int id){
+    public ObjectNode getBaseById(@RequestParam("id") int id){
         return animalService.findById(id);
     }
 
     @PatchMapping("/api/animal")
-    public AnimalDTO updateBase(@RequestParam("id") int id,
+    public ObjectNode updateBase(@RequestParam("id") int id,
                                 @RequestBody AnimalDTO animalDTO){
         return animalService.update(animalDTO,id);
     }

@@ -1,12 +1,16 @@
 package com.rest.program.service;
 
 import com.rest.program.dto.AnimalDTO;
+import com.rest.program.dto.CatFactDTO;
 import com.rest.program.entity.Animal;
 import com.rest.program.repository.AnimalRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import java.util.List;
 
@@ -18,15 +22,19 @@ import java.util.List;
 public class AnimalService {
 
     private final AnimalRepository animalRepository;
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
+    private final String catsFactURL = "https://catfact.ninja/fact?max_length=100";
 
-    private Animal convertToBase(AnimalDTO animalDTO) {
+    private Animal convertToAnimal(AnimalDTO animalDTO) {
         return Animal.builder()
                 .type(animalDTO.getType())
                 .name(animalDTO.getName())
                 .age(animalDTO.getAge())
                 .build();
     }
-    private AnimalDTO convertToDTO(Animal animal) {
+
+    private AnimalDTO convertToAnimalDTO(Animal animal) {
         return AnimalDTO.builder()
                 .type(animal.getType())
                 .name(animal.getName())
@@ -34,25 +42,32 @@ public class AnimalService {
                 .build();
     }
 
-    public AnimalDTO save(AnimalDTO animalDTO) {
-        return convertToDTO(animalRepository.save(convertToBase(animalDTO)));
+    private ObjectNode getAnimalResponse(AnimalDTO animalDTO) {
+        ObjectNode animalJson = objectMapper.valueToTree(animalDTO);
+        CatFactDTO catFactDTO = restTemplate.getForObject(catsFactURL, CatFactDTO.class);
+        log.info("GET from catsFactURL: {}", catsFactURL);
+        animalJson.put("fact", catFactDTO.getFact());
+        return animalJson;
     }
 
-    public AnimalDTO findById(int id) {
+    public ObjectNode save(AnimalDTO animalDTO) {
+        animalRepository.save(convertToAnimal(animalDTO));
+        return getAnimalResponse(animalDTO);
+    }
 
-        Animal animal = animalRepository.findById(id).orElse(null);
-
-        return convertToDTO(animal);
+    public ObjectNode findById(int id) {
+        return getAnimalResponse(convertToAnimalDTO(animalRepository.findById(id).orElse(null)));
     }
 
     public List<AnimalDTO> findAll() {
-        return animalRepository.findAll().stream().map(this::convertToDTO).toList();
+        return animalRepository.findAll().stream().map(this::convertToAnimalDTO).toList();
     }
 
-    public AnimalDTO update(AnimalDTO animalDTO, int id) {
-        Animal animal = convertToBase(animalDTO);
+    public ObjectNode update(AnimalDTO animalDTO, int id) {
+        Animal animal = convertToAnimal(animalDTO);
         animal.setId(id);
-        return convertToDTO(animalRepository.save(animal));
+        animalRepository.save(animal);
+        return getAnimalResponse(animalDTO);
     }
 
     public void deleteById(int id) {
