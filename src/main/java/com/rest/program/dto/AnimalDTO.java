@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BaseDTO {
+public class AnimalDTO {
 
     private String type;
     private String name;

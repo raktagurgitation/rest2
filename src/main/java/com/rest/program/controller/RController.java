@@ -1,45 +1,44 @@
 package com.rest.program.controller;
 
-import com.rest.program.dto.BaseDTO;
-import com.rest.program.service.BaseService;
+import com.rest.program.dto.AnimalDTO;
+import com.rest.program.service.AnimalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @RestController
 @Slf4j
 public class RController {
 
-    private final BaseService baseService;
+    private final AnimalService animalService;
 
-    @PostMapping("/api/base")
-    public BaseDTO sayHello(@RequestBody BaseDTO baseDTO) {
-        return baseService.save(baseDTO);
+    @PostMapping("/api/animal")
+    public AnimalDTO sayHello(@RequestBody AnimalDTO animalDTO) {
+        return animalService.save(animalDTO);
     }
 
-    @GetMapping("/api/all_base")
-    public List<BaseDTO> getAllBases(){
-        return baseService.findAll();
+    @GetMapping("/api/animal/all")
+    public List<AnimalDTO> getAllBases(){
+        return animalService.findAll();
     }
 
-    @GetMapping("/api/base")
-    public BaseDTO getBaseById(@RequestParam("id") UUID id){
-        return baseService.findById(id);
+    @GetMapping("/api/animal")
+    public AnimalDTO getBaseById(@RequestParam("id") int id){
+        return animalService.findById(id);
     }
 
-    @PatchMapping("/api/base")
-    public BaseDTO updateBase(@RequestParam("id") UUID id,
-                              @RequestBody BaseDTO baseDTO){
-        return baseService.update(baseDTO,id);
+    @PatchMapping("/api/animal")
+    public AnimalDTO updateBase(@RequestParam("id") int id,
+                                @RequestBody AnimalDTO animalDTO){
+        return animalService.update(animalDTO,id);
     }
 
-    @DeleteMapping("/api/base")
-    public void deleteById(@RequestParam("id") UUID id){
-       baseService.deleteById(id);
+    @DeleteMapping("/api/animal")
+    public void deleteById(@RequestParam("id") int id){
+       animalService.deleteById(id);
     }
 
 

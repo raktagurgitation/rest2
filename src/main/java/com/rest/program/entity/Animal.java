@@ -4,11 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.UUID;
-
 
 @Slf4j
-@Table(name="base")
+@Table(name="animal")
 @Entity
 @Setter
 @Getter
@@ -16,12 +14,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Base {
+public class Animal {
 
     @Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Column(name = "type")
     private String type;
@@ -32,7 +30,7 @@ public class Base {
     @Column(name = "age")
     private int age;
 
-    public Base(String type, String name, int age) {
+    public Animal(String type, String name, int age) {
         this.type = type;
         this.name = name;
         this.age = age;
