@@ -46,7 +46,4 @@ public class RController {
     public void deleteById(@RequestParam("id") int id){
        animalService.deleteById(id);
     }
-
-
-
 }

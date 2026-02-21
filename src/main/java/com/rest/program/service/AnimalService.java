@@ -5,6 +5,7 @@ import com.rest.program.dto.CatFactDTO;
 import com.rest.program.dto.RandomNameDTO;
 import com.rest.program.entity.Animal;
 import com.rest.program.repository.AnimalRepository;
+import com.rest.program.utils.AnimalTypeEnum;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,11 @@ public class AnimalService {
         animalJson.put("fact", catFactDTO.getFact());
         return animalJson;
     }
+    private ObjectNode getAnimalResponse(AnimalDTO animalDTO, String message) {
+        ObjectNode animalJson = objectMapper.valueToTree(animalDTO);
+        animalJson.put("fact", message);
+        return animalJson;
+    }
 
     public ObjectNode save(AnimalDTO animalDTO) {
         animalRepository.save(convertToAnimal(animalDTO));
@@ -60,12 +66,19 @@ public class AnimalService {
 
     public ObjectNode generateAnimal() {
         int age = ThreadLocalRandom.current().nextInt(1, 20);
+        AnimalTypeEnum animalType = AnimalTypeEnum.values()[ThreadLocalRandom.current().nextInt(AnimalTypeEnum.values().length)];
+
         String nameHTML = restTemplate.getForObject(randomNameURL, String.class);
         RandomNameDTO randomNameDTO = objectMapper.readValue(nameHTML, RandomNameDTO.class);
-        AnimalDTO animalDTO = new AnimalDTO("cat",randomNameDTO.getFirstName(), age);
-        log.info("Take random name from {}", randomNameURL);
+        AnimalDTO animalDTO = new AnimalDTO(animalType,randomNameDTO.getFirstName(), age);
         animalRepository.save(convertToAnimal(animalDTO));
-        return getAnimalResponse(animalDTO);
+
+        log.info("Take random name from {}", randomNameURL);
+
+        if (animalType.equals(AnimalTypeEnum.CAT)) {
+            return getAnimalResponse(animalDTO);
+        }
+        return getAnimalResponse(animalDTO, "No fact for this type of animal :(");
     }
 
     public ObjectNode findById(int id) {

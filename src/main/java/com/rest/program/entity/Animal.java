@@ -1,5 +1,6 @@
 package com.rest.program.entity;
 
+import com.rest.program.utils.AnimalTypeEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,8 @@ public class Animal {
     private int id;
 
     @Column(name = "type")
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private AnimalTypeEnum type;
 
     @Column(name = "name")
     private String name;
@@ -30,7 +32,7 @@ public class Animal {
     @Column(name = "age")
     private int age;
 
-    public Animal(String type, String name, int age) {
+    public Animal(AnimalTypeEnum type, String name, int age) {
         this.type = type;
         this.name = name;
         this.age = age;
